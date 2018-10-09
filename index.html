@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no"> 
+  <title>map</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #container {
+      width: 100%;
+      height: 80%;
+      box-shadow: 2px 2px 5px #ccc;
+    }
+
+    #addMark input, #addMark button {
+      padding: 5px;
+      line-height: 16px;
+      border-radius: 4px;
+      font-size: 20px;
+    }
+
+    #addMark input {
+      display: inline-block;
+      margin: 10px;
+      height: 1em;
+      border:1px solid #c8cccf;
+    }
+
+    #addMark button {
+      display: block;
+      margin: 0 10px;
+      text-align: center;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      background-color: transparent;
+      background-image: none;
+      color: #25A5F7;
+      border-color: #25A5F7;
+      cursor: pointer;
+    }
+    
+    #addMark button:hover {
+      color: #fff;
+      background-color: #25A5F7;
+      border-color: #25A5F7;
+    }
+
+    /* 自定义信息窗体 */
+    .info {
+        border: solid 1px silver;
+    }
+    div.info-top {
+        position: relative;
+        background: none repeat scroll 0 0 #F9F9F9;
+        border-bottom: 1px solid #CCC;
+        border-radius: 5px 5px 0 0;
+    }
+    div.info-top div {
+        display: inline-block;
+        color: #333333;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 31px;
+        padding: 0 10px;
+    }
+    div.info-top img {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        transition-duration: 0.25s;
+    }
+    div.info-top img:hover {
+        box-shadow: 0px 0px 5px #000;
+    }
+    div.info-middle {
+        font-size: 12px;
+        padding: 6px;
+        line-height: 20px;
+    }
+    div.info-bottom {
+        height: 0px;
+        width: 100%;
+        clear: both;
+        text-align: center;
+    }
+    div.info-bottom img {
+        position: relative;
+        z-index: 104;
+    }
+    span {
+        margin-left: 5px;
+        font-size: 11px;
+    }
+
+    .info-button {
+      height: 28px;
+      line-height: 28px;
+      background-color: #0D9BF2;
+      color: #FFF;
+      border: 0;
+      outline: none;
+      padding-left: 5px;
+      padding-right: 5px;
+      border-radius: 3px;
+      margin: 5px 5px 5px 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  
+  <!-- add mark -->
+  <div>
+    <form id="addMark">
+      <input type="text" placeholder="经度">
+      <input type="text" placeholder="纬度">
+      <input type="text" placeholder="标题">
+      <input type="text" placeholder="内容">
+      <button onclick="getPosition()">ADD</button>
+    </form>
+  </div>
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.10&key=924d36085a8b86a109b7d80f4ca59282"></script> 
+  <script type="text/javascript" src="json.js"></script> 
+  <script>
+
+    window.onload = function () {
+      initMarker();
+      map.setFitView();
+    }
+
+    var markerNow = null;
+    var map = new AMap.Map('container', {
+      zoom:11,//级别
+      center: [116.397428, 39.90923],//中心点坐标
+      viewMode:'3D'//使用3D视图
+    });
+
+    map.on('click', function(ev) {
+      // 触发事件的地理坐标，AMap.LngLat 类型
+      var lng = ev.lnglat.getLng();
+      var lat = ev.lnglat.getLat();
+
+      // 写入表单
+      [j, w, t] = document.getElementById('addMark').getElementsByTagName('input')
+      j.value = lng;
+      w.value = lat;
+    });
+    
+    // 读取表单数据
+    function getPosition() {
+      [j, w, t, c] = document.getElementById('addMark').getElementsByTagName('input')
+      if (j.value && w.value) {
+        addMark({
+          lng: j.value,
+          lat: w.value,
+          icon: 'icon/6 32.png',
+          title: t.value,
+          content: c.value
+        }) 
+      }
+    }
+
+    // add mark
+    function addMark(a) {
+      var marker = new AMap.Marker({
+        position: new AMap.LngLat(a.lng, a.lat),
+        icon: a.icon,
+        title: a.title
+      });
+
+      // 将创建的点标记添加到已有的地图实例：
+      map.add(marker);
+
+      //鼠标点击marker弹出自定义的信息窗体
+      AMap.event.addListener(marker, 'click', function() {
+        markerNow = marker;
+        //实例化信息窗体
+        var title = a.title,
+            content = '';
+        content += a.content + "<br>";
+        content += "<input type=\"button\" class=\"info-button\" value=\"更新\" onclick=\"javascript:updateInfo()\">";
+        content += "<input type=\"button\" class=\"info-button\" value=\"删除\" onclick=\"javascript:removeMark()\">";
+        var infoWindow = new AMap.InfoWindow({
+            isCustom: true,  //使用自定义窗体
+            content: createInfoWindow(title, content),
+            offset: new AMap.Pixel(16, -45)
+        });
+        infoWindow.open(map, marker.getPosition());
+      });
+      
+      // 清空表单
+      resetForm()
+    }
+    
+    // 删除标记点
+    function removeMark() {
+      map.remove(markerNow);
+      closeInfoWindow()
+    }
+    
+
+    //构建自定义信息窗体
+    function createInfoWindow(title, content) {
+      var info = document.createElement("div");
+      info.className = "info";
+      
+      info.style.width = "400px";
+      // 定义顶部标题
+      var top = document.createElement("div");
+      var titleD = document.createElement("div");
+      var closeX = document.createElement("img");
+      top.className = "info-top";
+      titleD.innerHTML = title;
+      closeX.src = "https://webapi.amap.com/images/close2.gif";
+      closeX.onclick = closeInfoWindow;
+
+      top.appendChild(titleD);
+      top.appendChild(closeX);
+      info.appendChild(top);
+
+      // 定义中部内容
+      var middle = document.createElement("div");
+      middle.className = "info-middle";
+      middle.style.backgroundColor = 'white';
+      middle.innerHTML = content;
+      info.appendChild(middle);
+
+      // 定义底部内容
+      var bottom = document.createElement("div");
+      bottom.className = "info-bottom";
+      bottom.style.position = 'relative';
+      bottom.style.top = '0px';
+      bottom.style.margin = '0 auto';
+      var sharp = document.createElement("img");
+      sharp.src = "https://webapi.amap.com/images/sharp.png";
+      bottom.appendChild(sharp);
+      info.appendChild(bottom);
+      return info;
+    }
+
+    //关闭信息窗体
+    function closeInfoWindow() {
+      map.clearInfoWindow();
+    }
+
+    // 清空表单
+    function resetForm() {
+      [j, w, t, c] = document.getElementById('addMark').getElementsByTagName('input')
+      for(let i in [j, w, t, c]) {
+        i.value = '';
+      }
+      [j.value, w.value, t.value, c.value] = ['', '', '', '']
+    }
+
+    // 初始化已标注点
+    function initMarker() {
+      for(let i in markerArr) {
+        addMark(markerArr[i])
+      }
+    }
+  </script>
+</body>
+</html>
