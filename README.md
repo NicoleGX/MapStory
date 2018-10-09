@@ -5,7 +5,8 @@
 - [x] add/remove marker
 - [ ] add/view/update note
 - [x] init map by data file
-- [x] Adjust the field of vision according to the marker
+- [x] adjust the field of vision according to the marker
+- [x] add search tips
 
 # Second Step
 - [ ] data files synchronize with operations
