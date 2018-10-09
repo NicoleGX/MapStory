@@ -1,4 +1,5 @@
 # MapStory
+[DEMO](https://htmlpreview.github.io/?https://github.com/NicoleGX/MapStory/blob/master/index.html)
 
 # First Step
 - [x] add/remove marker
