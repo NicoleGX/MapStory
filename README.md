@@ -3,7 +3,7 @@
 
 # First Step
 - [x] add/remove marker
-- [ ] add/view/update note
+- [x] add/view note
 - [x] init map by data file
 - [x] adjust the field of vision according to the marker
 - [x] add search tips
