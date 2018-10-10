@@ -21,6 +21,41 @@ var markerArr = [
     content: ''
   },
   {
+    lng: 113.265278,
+    lat: 23.120535,
+    icon: 'icon/6 32.png',
+    title: '点都德',
+    content: ''
+  },
+  {
+    lng: 113.260128,
+    lat: 23.114559,
+    icon: 'icon/6 32.png',
+    title: '石室圣心大教堂',
+    content: ''
+  },
+  {
+    lng: 113.248338,
+    lat: 23.114923,
+    icon: 'icon/6 32.png',
+    title: '上下九步行街',
+    content: ''
+  },
+  {
+    lng: 113.244747,
+    lat: 23.106777,
+    icon: 'icon/6 32.png',
+    title: '沙面',
+    content: ''
+  },
+  {
+    lng: 113.553887,
+    lat: 22.224495,
+    icon: 'icon/6 32.png',
+    title: '如家快捷酒店',
+    content: ''
+  },
+  {
     lng: 113.543119,
     lat: 22.191816,
     icon: 'icon/6 32.png',

@@ -32,7 +32,6 @@
     }
 
     #addMark button {
-      display: block;
       margin: 0 10px;
       text-align: center;
       white-space: nowrap;
@@ -145,8 +144,12 @@
       <input type="text" placeholder="纬度">
       <input type="text" placeholder="标题">
       <input type="text" placeholder="内容">
-      <button onclick="getPosition()">ADD</button>
+      <div class="btn-group">
+        <button type="button" onclick="getPosition()">ADD</button>
+        <button type="button" onclick="getJson()">JSON</button>
+      </div>
     </form>
+    <div id="jsonTips"></div>
   </div>
   <div id="tip">
     <input type="text" id="keyword" name="keyword" value="请输入关键字：(选定后搜索)" onfocus='this.value=""'/>
@@ -210,7 +213,7 @@
         var title = a.title,
             content = '';
         content += a.content + "<br>";
-        content += "<input type=\"button\" class=\"info-button\" value=\"更新\" onclick=\"javascript:updateInfo()\">";
+        // content += "<input type=\"button\" class=\"info-button\" value=\"更新\" onclick=\"javascript:updateInfo()\">";
         content += "<input type=\"button\" class=\"info-button\" value=\"删除\" onclick=\"javascript:removeMark()\">";
         var infoWindow = new AMap.InfoWindow({
             isCustom: true,  //使用自定义窗体
@@ -308,6 +311,18 @@
         placeSearch.search(e.poi.name)
       });
     });
+
+    function getJson() {
+      [j, w, t, c] = document.getElementById('addMark').getElementsByTagName('input')
+      var data = `{
+        lng: ` + j.value + `,
+        lat: ` + w.value + `,
+        icon: \'icon/6 32.png\',
+        title: ` + t.value + `,
+        content: ` + c.value + `
+      }`
+      document.getElementById('jsonTips').innerHTML = data
+    }
   </script>
 </body>
 </html>
